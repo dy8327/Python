@@ -12,7 +12,7 @@ def main():
     # PDF 04-2 사용자 입출력 자료를 기반으로 프롬프트를 띄워 입력을 받습니다.
     print("=== 학생 성적 처리 시스템 ===")
     print("과목 별 점수는 공배으로 구분하여 넣어주십시요..")
-    print("(예: 홍길동 국어 80 수학 70 영어 100 )")
+    print("(예: 홍길동 국어 수학 영어 과학 사회 100 100 100 100 100 )")
     student_data = input("이름 입력: ")
     subject_data = input("과목 입력 : ")
     score_data = input("점수 입력: ")
@@ -25,7 +25,9 @@ def main():
     subject_board = {
         "국어": int (score_list[0]),
         "수학": int (score_list[1]),
-        "영어": int (score_list[2])
+        "영어": int (score_list[2]),
+        "과학": int (score_list[3]),
+        "사회": int (score_list[4])
     }
    # print(f"입력값 : {student_data} {subject_list[0]} {score_list[0]}")
 
@@ -44,7 +46,7 @@ def main():
     # 5. 함수 호출: 가변 매개변수 함수에 리스트 내용 전달 (언패킹)
     # 리스트의 가격 데이터들을 개별 인자로 풀어서 전달합니다.
     total_scores = calculate_sum(*input_scores)
-    total_avg = total_scores / 3
+    total_avg = total_scores // len(valid_scores)
 
     if total_avg>=90:
         grade = 'A'

@@ -72,8 +72,9 @@ def main():
                     f.write(f"최종등급 : {grade}\n")
                     f.write("----------------------\n")    
 
-       
-
+    with open("c:/python/score_report.txt", "a", encoding="utf-8") as f:
+            f.write("----- 순 위 -----\n")  
+   
     for j in range(len(student_list)-1):
         for i in range(len(student_list)-1-j):
             if avg_list[i]<avg_list[i+1]:
@@ -91,7 +92,6 @@ def main():
         print (i+1, "등", student_list[i], avg_list[i])
         rank = i+1
         with open("c:/python/score_report.txt", "a", encoding="utf-8") as f:
-            f.write("----- 순 위 -----\n")
             f.write(f"{rank} 등 {student_list[i]} \n")
         
     print("\n" + "="*30)

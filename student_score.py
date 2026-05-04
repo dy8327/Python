@@ -11,6 +11,7 @@ def main():
     in_num = 0
     student_list = []
     avg_list=[]
+    temp = 0
     # 2. 사용자 입력 활용하기 (input 사용)
     # PDF 04-2 사용자 입출력 자료를 기반으로 프롬프트를 띄워 입력을 받습니다.
     print("=== 학생 성적 처리 시스템 ===")
@@ -62,19 +63,37 @@ def main():
             grade = 'D'
         else:
             grade = 'F'
-
-        # 6. 파일 입출력 및 f-문자열 포매팅: 정산 리포트 생성
+# 6. 파일 입출력 및 f-문자열 포매팅: 정산 리포트 생성
         with open("c:/python/score_report.txt", "a", encoding="utf-8") as f:
-            f.write("--- 기말고사 성적 보고서 ---\n")
-            f.write(f"대상 학생 : {student_data}\n")
-            f.write(f"총 점수: {total_scores}점\n")
-            f.write(f"평균 점수 :{total_avg}점\n")
-            f.write(f"최종등급 : {grade}\n")
-            f.write("----------------------\n")
+                    f.write("--- 기말고사 성적 보고서 ---\n")
+                    f.write(f"대상 학생 : {student_data}\n")
+                    f.write(f"총 점수: {total_scores}점\n")
+                    f.write(f"평균 점수 :{total_avg}점\n")
+                    f.write(f"최종등급 : {grade}\n")
+                    f.write("----------------------\n")    
+
+       
+
+    for j in range(len(student_list)-1):
+        for i in range(len(student_list)-1-j):
+            if avg_list[i]<avg_list[i+1]:
+                temp_avg = avg_list[i]
+                temp_student = student_list[i]
+                avg_list[i]=avg_list[i+1]
+                student_list[i]=student_list[i+1]
+                avg_list[i+1]=temp_avg
+                student_list[i+1]=temp_student
+                
+            else:
+                continue
 
     for i in range(len(student_list)):
-         print(student_list[i], avg_list[i])
-
+        print (i+1, "등", student_list[i], avg_list[i])
+        rank = i+1
+        with open("c:/python/score_report.txt", "a", encoding="utf-8") as f:
+            f.write("----- 순 위 -----\n")
+            f.write(f"{rank} 등 {student_list[i]} \n")
+        
     print("\n" + "="*30)
     print(f"저장 위치 c:/pyton/score_report.txt 로 저장되었습니다.")
     print("="*30)

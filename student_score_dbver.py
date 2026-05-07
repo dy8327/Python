@@ -31,13 +31,21 @@ def insert_score_data(cursor, tch_string):  # , score_db):
         if len(score) != 5:
             print("입력된 과목 수가 다릅니다.")
             return
+        for s in score:
+            if s<0 or s>100:
+                print("점수는 0~100사이 입니다. 저장에 실패했습니다.")
+                print("다시 입력해주세요.")
+                return
     except ValueError:
         print("점수는 숫자만 입력해주세요.")
         return
-    total = sum(score)
-    avg = round(total/len(score), 2)
-    insert_sql = "INSERT INTO SCORE_BOX(STU_NAME, KOR, ENG, MATH, SOCI, SCIN, TOTAL, S_AVG) VALUES(:1, :2, :3, :4, :5, :6, :7, :8)"
-    cursor.execute(insert_sql, [name] + score + [total, avg])
+    try:
+        total = sum(score)
+        avg = round(total/len(score), 2)
+        insert_sql = "INSERT INTO SCORE_BOX(STU_NAME, KOR, ENG, MATH, SOCI, SCIN, TOTAL, S_AVG) VALUES(:1, :2, :3, :4, :5, :6, :7, :8)"
+        cursor.execute(insert_sql, [name] + score + [total, avg])
+    except oracledb.Error as e:
+        print(f"DB저장 실패: {e}")
     return
 
 
@@ -65,20 +73,8 @@ def insert_comment(cursor, comment, stu_name):  # 코멘트 입력
     cursor.execute(in_comment_sql, (comment, s_name,))
     return
 
-
-def main():
-
-    in_num = 0
-    conn = get_connection()
-    cursor = conn.cursor()
-    # try:
-    print("===== 성적관리 시스템=====\n")
-    print("1. 교사")
-    print("2. 학생")
-    in_num = int(input("해당하는 번호를 입력하세요.\n"))
-# 교사 메뉴
-    if in_num == 1:
-        while True:
+def teacher_menu(cursor, conn):
+    while True:
             print("1. 성적 입력")
             print("2. 성적 조회")
             print("3. 코멘트 작성")
@@ -136,17 +132,35 @@ def main():
             elif tch_num == 4:
                 print("프로그램 종료")
                 break
-    #학생메뉴
-    elif 2:
-        stu_name = input("학생 이름을 입력하세요: ")
-        one_data = inquire_one_data(cursor, stu_name)
-        if one_data is None:
+
+def student_menu(cursor):
+    stu_name = input("학생 이름을 입력하세요: ")
+    one_data = inquire_one_data(cursor, stu_name)
+    if one_data is None:
             print("해당 학생이 없습니다.")
-        else:    
+    else:    
             stu_name, kor, eng, math, soci, scin, coment = one_data
             print(f"{stu_name} 국어 {kor}, 영어{eng}, 수학{math}, 사회{soci}, 과학{scin}")
             print(f"선생님 코멘트 : {coment}")
             return
+
+def main():
+
+    in_num = 0
+    conn = get_connection()
+    cursor = conn.cursor()
+    # try:
+    print("===== 성적관리 시스템=====\n")
+    print("1. 교사")
+    print("2. 학생")
+    in_num = int(input("해당하는 번호를 입력하세요.\n"))
+# 교사 메뉴
+    if in_num == 1:
+        teacher_menu(cursor, conn)
+
+    #학생메뉴
+    elif in_num==2:
+        student_menu(cursor)
 
 
 if __name__ == "__main__":

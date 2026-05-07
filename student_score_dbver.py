@@ -64,16 +64,18 @@ def inquire_all_data(cursor):
     return cursor.fetchall()
 
 # 개별조회
-def inquire_one_data(cursor, stu_name):  
+def inquire_one_data(cursor, stu_name):
+    name = stu_name.strip()  
     inquire_one_sql = "SELECT STU_NAME, KOR, ENG, MATH, SOCI, SCIN, TEACHER_NOTE FROM GRADES_MASTER WHERE STU_NAME= :1"
-    cursor.execute(inquire_one_sql, (stu_name,))
+    cursor.execute(inquire_one_sql, (name,))
     return cursor.fetchone()
 
 #학생 조회
 def stu_one_data(cursor, stu_name): 
+    name = stu_name.strip()
     #순위 빼려면 한번 더 감싸서 꺼내와야한다.
     one_sql = "SELECT * FROM (SELECT STU_NAME, TOTAL, S_AVG, TEACHER_NOTE, RANK() OVER(ORDER BY TOTAL DESC) AS STRANK FROM GRADES_MASTER) WHERE STU_NAME= :1"
-    cursor.execute(one_sql,(stu_name,))
+    cursor.execute(one_sql,(name,))
     return cursor.fetchone()
 
 # 코멘트 입력
@@ -150,26 +152,28 @@ def teacher_menu(cursor, conn):
 
 #학생 메뉴
 def student_menu(cursor):
-    stu_name = input("본인 이름을 입력하세요: ")
-    one_data = stu_one_data(cursor, stu_name)
-    if one_data is None:
-            print("해당 학생이 없습니다.")
-    else:    
-            stu_name, total, avg, coment, rank = one_data
-            #성취도
-            if avg>=90:
-                grade = 'A'
-            elif avg>=80:
-                grade = 'B'
-            elif avg>=70:
-                grade = 'C'
-            elif avg>=60:
-                grade = 'D'
-            else: grade = 'F'
-            print(f"{stu_name} 학생은 '{rank}위'이며, 성취도는 '{ grade}'입니다.")
-            print(f"총점은 {total}점, 평균은 {avg}점 입니다.")
-            print(f"✍  선생님 코멘트 : {coment}")
-            return
+    while True:
+        stu_name = input("본인 이름을 입력하세요: ")
+        one_data = stu_one_data(cursor, stu_name)
+        if one_data is None:
+                print("해당 학생이 없습니다.")
+                continue
+        else:    
+                stu_name, total, avg, coment, rank = one_data
+                #성취도
+                if avg>=90:
+                    grade = 'A'
+                elif avg>=80:
+                    grade = 'B'
+                elif avg>=70:
+                    grade = 'C'
+                elif avg>=60:
+                    grade = 'D'
+                else: grade = 'F'
+                print(f"{stu_name} 학생은 '{rank}위'이며, 성취도는 '{ grade}'입니다.")
+                print(f"총점은 {total}점, 평균은 {avg}점 입니다.")
+                print(f"✍  선생님 코멘트 : {coment}")
+                return
 
 #실행 메인
 def main():

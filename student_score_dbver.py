@@ -45,6 +45,8 @@ def inquire_all_data(cursor):  # 학급 조회
     inquire_all_sql = """SELECT
         NVL(SUM(TOTAL),0) AS CLASS_TOTAL,
         NVL(AVG(S_AVG),0) AS CLASS_AVG,
+        NVL(MAX(S_AVG),0) AS AVG_MAX,
+        NVL(MIN(S_AVG),0) AS AVG_MIN,
         LISTAGG(STU_NAME||'('||S_AVG||')'||' ') WITHIN GROUP(ORDER BY TOTAL DESC) AS LIST_NAME
         FROM SCORE_BOX"""
     cursor.execute(inquire_all_sql)
@@ -101,8 +103,9 @@ def main():
                     sub = int(input("원하는 메뉴를 선택하세요: "))
                     if sub == 1:
                         all_data = inquire_all_data(cursor)
-                        for cls_total, cls_avg, stu_name in all_data:
-                            print(f"학급 총점{cls_total}점, 학급 평균{cls_avg}점")
+                        for cls_total, cls_avg, max_avg, min_avg, stu_name in all_data:
+                            print(f"학급 총점: {cls_total}점, 학급 평균: {cls_avg}점")
+                            print(f"최고점수: {max_avg}점, 최저점수: {min_avg}")
                             print(stu_name)
 
                     elif sub == 2:

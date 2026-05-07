@@ -91,6 +91,7 @@ def insert_comment(cursor, comment, stu_name, conn):
 #교사 메뉴
 def teacher_menu(cursor, conn):
     while True:
+            
             print("1. 성적 입력")
             print("2. 성적 조회")
             print("3. 코멘트 작성")
@@ -176,12 +177,16 @@ def main():
         in_num = 0
         conn = get_connection()
         cursor = conn.cursor()
-    
-        print("===== 성적관리 시스템=====\n")
-        print("1. 교사")
-        print("2. 학생") 
-        in_num = int(input("해당하는 번호를 입력하세요.\n")) #숫자 외 들어오면 뻑남... 수리하자.
-
+        while True:
+            try:
+                print("===== 성적관리 시스템=====\n")
+                print("1. 교사")
+                print("2. 학생") 
+                in_num = int(input("해당하는 번호를 입력하세요.\n"))
+                break
+            except ValueError:
+                print("숫자만 입력하세요.")
+                continue
         # 교사 메뉴
         if in_num == 1:
             teacher_menu(cursor, conn)
@@ -195,8 +200,10 @@ def main():
         conn.rollback() 
     finally:
         # 자원 반납
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 if __name__ == "__main__":
     main()

@@ -7,7 +7,6 @@ db_config = {
     "dsn": "localhost:1521/xe"
 }
 
-
 def get_connection():
     try:
         conn = oracledb.connect(
@@ -20,9 +19,8 @@ def get_connection():
         print(f"DB 접속실패: {e}")
         sys.exit(1)
 
-
+# 입력 받은 문자열 데이터 파싱하여 DB에 저장
 def insert_score_data(cursor, tch_string):  # , score_db):
-    # 입력 받은 문자열 데이터 파싱하여 DB에 저장
     # split()을 이용한 데이터 분리
     try:
         t_string = [x.strip() for x in tch_string.split(',')]
@@ -48,31 +46,33 @@ def insert_score_data(cursor, tch_string):  # , score_db):
         print(f"DB저장 실패: {e}")
     return
 
-
-def inquire_all_data(cursor):  # 학급 조회
+# 학급 조회
+def inquire_all_data(cursor):  
     inquire_all_sql = """SELECT
         NVL(SUM(TOTAL),0) AS CLASS_TOTAL,
         NVL(AVG(S_AVG),0) AS CLASS_AVG,
         NVL(MAX(S_AVG),0) AS AVG_MAX,
         NVL(MIN(S_AVG),0) AS AVG_MIN,
-        LISTAGG(STU_NAME||'('||S_AVG||')'||' ') WITHIN GROUP(ORDER BY TOTAL DESC) AS LIST_NAME
-        FROM SCORE_BOX"""
+        LISTAGG(RANK_NUM ||'위 '||STU_NAME||'('||S_AVG||')'||' ') WITHIN GROUP(ORDER BY RANK_NUM) AS RANK_LIST
+        FROM (SELECT STU_NAME, TOTAL, S_AVG, RANK() OVER(ORDER BY TOTAL DESC) AS RANK_NUM
+        FROM SCORE_BOX)"""
     cursor.execute(inquire_all_sql)
     return cursor.fetchall()
 
-
-def inquire_one_data(cursor, stu_name):  # 개별조회
+# 개별조회
+def inquire_one_data(cursor, stu_name):  
     inquire_one_sql = "SELECT STU_NAME, KOR, ENG, MATH, SOCI, SCIN, COMENT FROM SCORE_BOX WHERE STU_NAME= :1"
     cursor.execute(inquire_one_sql, (stu_name,))
     return cursor.fetchone()
 
-
-def insert_comment(cursor, comment, stu_name):  # 코멘트 입력
+# 코멘트 입력
+def insert_comment(cursor, comment, stu_name):  
     s_name = stu_name.strip()
     in_comment_sql = "UPDATE SCORE_BOX SET COMENT= :1 WHERE STU_NAME= :2"
     cursor.execute(in_comment_sql, (comment, s_name,))
     return
 
+#교사 메뉴
 def teacher_menu(cursor, conn):
     while True:
             print("1. 성적 입력")
@@ -133,6 +133,7 @@ def teacher_menu(cursor, conn):
                 print("프로그램 종료")
                 break
 
+#학생 메뉴
 def student_menu(cursor):
     stu_name = input("학생 이름을 입력하세요: ")
     one_data = inquire_one_data(cursor, stu_name)
@@ -149,12 +150,13 @@ def main():
     in_num = 0
     conn = get_connection()
     cursor = conn.cursor()
-    # try:
+
     print("===== 성적관리 시스템=====\n")
     print("1. 교사")
     print("2. 학생")
     in_num = int(input("해당하는 번호를 입력하세요.\n"))
-# 교사 메뉴
+
+    # 교사 메뉴
     if in_num == 1:
         teacher_menu(cursor, conn)
 

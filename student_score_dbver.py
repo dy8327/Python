@@ -27,15 +27,15 @@ def insert_score_data(cursor, tch_string, conn):  # , score_db):
         name = t_string[0]
         score = list(map(int, t_string[1:]))
         if len(score) != 5:
-            print("입력된 과목 수가 다릅니다.")
+            print("😨  입력된 과목 수가 다릅니다.")
             return
         for s in score: #db에 예외 처리 되어있지만 입력시 미리 에러 잡기
             if s<0 or s>100:
-                print("😨 점수는 0~100사이 입니다. 저장에 실패했습니다.")
+                print("😨  점수는 0~100사이 입니다. 저장에 실패했습니다.")
                 print("다시 입력해주세요.")
                 return
     except ValueError:
-        print("😨 점수는 숫자만 입력해주세요.")
+        print("😨  점수는 숫자만 입력해주세요.")
         return
     try:
         total = sum(score)
@@ -44,9 +44,9 @@ def insert_score_data(cursor, tch_string, conn):  # , score_db):
         cursor.execute(insert_sql, [name] + score + [total, avg])
 
         conn.commit()
-        print(f"😀 DB 저장 성공! {name} 학생의 데이터가 저장되었습니다.")
+        print(f"😀  DB 저장 성공! {name} 학생의 데이터가 저장되었습니다.")
     except oracledb.Error as e:
-        print(f"😨 DB저장 실패: {e}")
+        print(f"😨  DB저장 실패: {e}")
         conn.rollback() #저장 실패 시 롤백
     return
 
@@ -96,7 +96,7 @@ def teacher_menu(cursor, conn):
             print("2. 성적 조회")
             print("3. 코멘트 작성")
             print("4. 종료")
-            tch_num = int(input("📄 원하는 메뉴를 선택하세요: "))
+            tch_num = int(input("📄  원하는 메뉴를 선택하세요: "))
             if tch_num == 1:
                 while True:
                     tch_input = input(
@@ -129,7 +129,7 @@ def teacher_menu(cursor, conn):
                             stu_name, kor, eng, math, soci, scin, coment = one_data
                             print(
                                 f"{stu_name} 국어 {kor}, 영어{eng}, 수학{math}, 사회{soci}, 과학{scin}")
-                            print(f"✍ 선생님 코멘트 : {coment}")
+                            print(f"✍  선생님 코멘트 : {coment}")
 
                     elif sub == 3:
                         break
@@ -138,7 +138,7 @@ def teacher_menu(cursor, conn):
                 stu_name = input("학생 이름 : ")
                 comment = input("코멘트를 작성해주세요(200자이내) : ")
                 insert_comment(cursor, comment, stu_name, conn)
-                
+                #rowcount 수정 필요...
                 if cursor.rowcount == 0:
                     print("해당 학생을 찾을 수 없습니다.")
                 else:
@@ -158,17 +158,17 @@ def student_menu(cursor):
             stu_name, total, avg, coment, rank = one_data
             #성취도
             if avg>=90:
-                grad = 'A'
+                grade = 'A'
             elif avg>=80:
-                grad = 'B'
+                grade = 'B'
             elif avg>=70:
-                grad = 'C'
+                grade = 'C'
             elif avg>=60:
-                grad = 'D'
-            else: grad = 'F'
-            print(f"{stu_name} 학생은 '{rank}위'이며, 성취도는 '{ grad}'입니다.")
+                grade = 'D'
+            else: grade = 'F'
+            print(f"{stu_name} 학생은 '{rank}위'이며, 성취도는 '{ grade}'입니다.")
             print(f"총점은 {total}점, 평균은 {avg}점 입니다.")
-            print(f"✍ 선생님 코멘트 : {coment}")
+            print(f"✍  선생님 코멘트 : {coment}")
             return
 
 #실행 메인
